@@ -13,6 +13,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  document.querySelectorAll(".navbar-nav .nav-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const navbarCollapse = document.querySelector(".navbar-collapse");
+      if (navbarCollapse.classList.contains("show")) {
+        new bootstrap.Collapse(navbarCollapse).hide();
+      }
+    });
+  });
+
   // Function to scroll to the top of the page
   function scrollToTop() {
     window.scrollTo({
@@ -52,18 +61,55 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("contactForm");
   const successMessage = document.getElementById("successMessage");
 
+  const nameError = document.getElementById("nameError");
+  const emailError = document.getElementById("emailError");
+  const messageError = document.getElementById("messageError");
+
+  function showError(el) {
+    el.classList.remove("d-none");
+  }
+
+  function hideError(el) {
+    el.classList.add("d-none");
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
+
+    let isValid = true;
 
     const name = form.name.value.trim();
     const email = form.email.value.trim();
     const message = form.message.value.trim();
 
-    // Basic Validation
-    if (!name || !email || !message) {
-      alert("Please fill in all fields.");
-      return;
+    // Reset errors
+    hideError(nameError);
+    hideError(emailError);
+    hideError(messageError);
+
+    // Name validation
+    if (!name) {
+      showError(nameError);
+      isValid = false;
     }
+
+    // Email validation
+    if (!email || !isValidEmail(email)) {
+      showError(emailError);
+      isValid = false;
+    }
+
+    // Message validation
+    if (!message) {
+      showError(messageError);
+      isValid = false;
+    }
+
+    if (!isValid) return;
 
     const formData = new FormData(form);
 
@@ -80,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
         successMessage.classList.remove("d-none");
         successMessage.scrollIntoView({ behavior: "smooth" });
       } else {
-        alert("❌ Error: " + (result.message || "Something went wrong."));
+        alert("❌ Submission failed. Please try again.");
       }
     } catch (error) {
       alert("❌ Network error. Please try again.");
