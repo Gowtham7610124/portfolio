@@ -123,8 +123,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (result.success) {
         form.reset();
+
         successMessage.classList.remove("d-none");
         successMessage.scrollIntoView({ behavior: "smooth" });
+
+        setTimeout(() => {
+          successMessage.classList.add("d-none");
+        }, 5000);
       } else {
         alert("❌ Submission failed. Please try again.");
       }
